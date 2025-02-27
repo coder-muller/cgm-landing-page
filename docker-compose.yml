@@ -1,0 +1,26 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: landing-page
+    restart: always
+    environment:
+      - NODE_ENV=9000
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.landing-page-http.rule=Host(`cgmsistemas.cgmcloud.com.br`)
+      - traefik.http.routers.landing-page-http.entrypoints=http
+      - traefik.http.routers.landing-page-http.middlewares=https-redirect
+      - traefik.http.routers.landing-page-https.rule=Host(`cgmsistemas.cgmcloud.com.br`)
+      - traefik.http.routers.landing-page-https.entrypoints=https
+      - traefik.http.routers.landing-page-https.tls=true
+      - traefik.http.routers.landing-page-https.tls.certresolver=le
+      - traefik.http.routers.landing-page-https.service=landing-page-service
+      - traefik.http.services.landing-page-service.loadbalancer.server.port=9000
+    networks:
+      - traefik-public
+
+networks:
+  traefik-public:
+    external: true
